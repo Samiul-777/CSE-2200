@@ -61,7 +61,7 @@ export default function CertificateDetail() {
       <div className="text-center animate-fade-in">
         <XCircle size={48} className="text-red-400 mx-auto mb-4" />
         <h1 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'Syne, sans-serif' }}>Certificate Not Found</h1>
-        <p className="text-gray-500 mb-6">No certificate found with ID: <span className="font-mono text-red-400">{id}</span></p>
+        <p className="text-gray-500 mb-6">No certificate found with the following ID: <span className="font-mono text-red-400">{id}</span></p>
         <Link to="/verify" className="btn-primary px-6 py-3 rounded-xl font-semibold">
           Try Another ID
         </Link>
