@@ -6,7 +6,10 @@ import Landing from './pages/Landing'
 import Login from './pages/Login'
 import RegisterOrg from './pages/RegisterOrg'
 import RegisterUser from './pages/RegisterUser'
+import Dashboard from './pages/Dashboard'
+import CreateCertificate from './pages/CreateCertificate'
 import Verify from './pages/Verify'
+import CertificateDetail from './pages/CertificateDetail'
 
 const ProtectedRoute = ({ children, orgOnly = false }) => {
   const { user, loading } = useAuth()
@@ -32,6 +35,17 @@ const AppRoutes = () => {
         <Route path="/register/organization" element={user ? <Navigate to="/dashboard" replace /> : <RegisterOrg />} />
         <Route path="/register/user" element={user ? <Navigate to="/dashboard" replace /> : <RegisterUser />} />
         <Route path="/verify" element={<Verify />} />
+        <Route path="/certificate/:id" element={<CertificateDetail />} />
+        <Route path="/dashboard" element={
+          <ProtectedRoute orgOnly>
+            <Dashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/create" element={
+          <ProtectedRoute orgOnly>
+            <CreateCertificate />
+          </ProtectedRoute>
+        } />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
