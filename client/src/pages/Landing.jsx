@@ -1,4 +1,5 @@
-import { Shield, Zap, QrCode, Globe, ArrowRight, Lock, Award } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Shield, Zap, QrCode, Globe, ArrowRight, CheckCircle, Lock, Award } from 'lucide-react'
 
 const features = [
   { icon: Shield, title: 'Tamper-proof Certificates', desc: 'Every certificate is cryptographically signed with a unique ID that cannot be forged or altered.' },
@@ -45,14 +46,14 @@ export default function Landing() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button type="button"
+            <Link to="/register/organization"
               className="btn-primary flex items-center gap-2 px-6 py-3.5 rounded-xl text-base font-semibold">
               Start Issuing Certificates <ArrowRight size={18} />
-            </button>
-            <button type="button"
+            </Link>
+            <Link to="/verify"
               className="flex items-center gap-2 px-6 py-3.5 rounded-xl text-base font-medium text-gray-300 border border-gray-700 hover:border-gray-500 hover:text-white transition-all">
               <QrCode size={18} /> Verify a Certificate
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -166,14 +167,14 @@ export default function Landing() {
             </h2>
             <p className="text-gray-400 mb-8">Join organizations issuing verifiable digital certificates today.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button type="button"
+              <Link to="/register/organization"
                 className="btn-primary flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold">
                 Register Organization <ArrowRight size={18} />
-              </button>
-              <button type="button"
+              </Link>
+              <Link to="/register/user"
                 className="flex items-center justify-center px-6 py-3.5 rounded-xl font-medium text-gray-300 border border-gray-700 hover:border-gray-500 transition-all">
                 I have a certificate
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -188,8 +189,8 @@ export default function Landing() {
           </div>
           <p className="text-xs text-gray-600">© 2025 MAScertify. Secure Certificate Verification Platform.</p>
           <div className="flex gap-6 text-xs text-gray-600">
-            <span className="cursor-default">Verify</span>
-            <span className="cursor-default">Sign In</span>
+            <Link to="/verify" className="hover:text-gray-400 transition-colors">Verify</Link>
+            <Link to="/login" className="hover:text-gray-400 transition-colors">Sign In</Link>
           </div>
         </div>
       </footer>
