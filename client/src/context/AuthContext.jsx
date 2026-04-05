@@ -10,6 +10,7 @@ axios.defaults.baseURL = apiBaseUrl
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
   const [organization, setOrganization] = useState(null)
+  const [organizationApproval, setOrganizationApproval] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -22,14 +23,29 @@ export const AuthProvider = ({ children }) => {
     }
   }, [])
 
-  const fetchMe = async () => {
+  const [networkError, setNetworkError] = useState(false)
+
+  const fetchMe = async (isRetry = false) => {
     try {
       const res = await axios.get('/api/auth/me')
       setUser(res.data.user)
       setOrganization(res.data.organization)
-    } catch {
-      localStorage.removeItem('masc_token')
-      delete axios.defaults.headers.common['Authorization']
+      setOrganizationApproval(res.data.organizationApproval ?? null)
+      setNetworkError(false)
+    } catch (err) {
+      // Only clear session on 401 (invalid/expired token).
+      if (err.response?.status === 401) {
+        localStorage.removeItem('masc_token')
+        delete axios.defaults.headers.common['Authorization']
+        setOrganizationApproval(null)
+        setNetworkError(false)
+      } else {
+        // Network error (e.g. Render backend sleeping) — keep token, retry after delay
+        setNetworkError(true)
+        if (!isRetry) {
+          setTimeout(() => fetchMe(true), 5000)
+        }
+      }
     } finally {
       setLoading(false)
     }
@@ -69,17 +85,31 @@ export const AuthProvider = ({ children }) => {
     delete axios.defaults.headers.common['Authorization']
     setUser(null)
     setOrganization(null)
+    setOrganizationApproval(null)
   }
 
   const updateProfile = async (data) => {
     const res = await axios.put('/api/auth/profile', data)
     setUser(res.data.user)
     if (res.data.organization) setOrganization(res.data.organization)
+    setOrganizationApproval(res.data.organizationApproval ?? null)
     return res.data
   }
 
   return (
-    <AuthContext.Provider value={{ user, organization, loading, login, registerUser, registerOrg, logout, updateProfile, fetchMe }}>
+    <AuthContext.Provider value={{
+      user,
+      organization,
+      organizationApproval,
+      loading,
+      networkError,
+      login,
+      registerUser,
+      registerOrg,
+      logout,
+      updateProfile,
+      fetchMe,
+    }}>
       {children}
     </AuthContext.Provider>
   )
