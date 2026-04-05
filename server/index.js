@@ -3,8 +3,33 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import authRoutes from './routes/auth.js';
 import certificateRoutes from './routes/certificates.js';
+import adminRoutes from './routes/admin.js';
+import collectionRoutes from './routes/collections.js';
+import mediaRoutes from './routes/media.js';
+import organizationRoutes from './routes/organizations.js';
+import discoverRoutes from './routes/discover.js';
+import orgPublishedCourseRoutes from './routes/orgPublishedCourses.js';
+import embedRoutes from './routes/embed.js';
+import User from './models/User.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
+
+async function promoteAdminsFromEnv() {
+  const emails = (process.env.ADMIN_EMAILS || '')
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+  if (!emails.length) return;
+  const result = await User.updateMany({ email: { $in: emails } }, { $set: { role: 'admin' } });
+  if (result.modifiedCount > 0) {
+    console.log(`🔑 Promoted ${result.modifiedCount} user(s) to admin (ADMIN_EMAILS)`);
+  }
+}
 
 const app = express();
 
@@ -26,6 +51,13 @@ app.get('/api/health', (req, res) => res.json({ status: 'ok', app: 'MAScertify' 
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/certificates', certificateRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/collections', collectionRoutes);
+app.use('/api/media', mediaRoutes);
+app.use('/api/organizations', organizationRoutes);
+app.use('/api/discover', discoverRoutes);
+app.use('/api/org/published-courses', orgPublishedCourseRoutes);
+app.use('/api/embed', embedRoutes);
 
 // Error handler
 app.use((err, req, res, next) => {
@@ -33,12 +65,22 @@ app.use((err, req, res, next) => {
   res.status(500).json({ success: false, message: err.message });
 });
 
+// Serve frontend in production
+const distPath = path.join(__dirname, '../client/dist');
+app.use(express.static(distPath));
+
+// Fallback for SPA routing
+app.get('*', (req, res) => {
+  res.sendFile(path.join(distPath, 'index.html'));
+});
+
 // Connect DB & start
 mongoose.connect(process.env.MONGO_URI, {
   dbName: 'mascertify',
   serverSelectionTimeoutMS: 5000,
 })
-  .then(() => {
+  .then(async () => {
+    await promoteAdminsFromEnv();
     const port = process.env.PORT || 5000;
     app.listen(port, () => {
       console.log(`✅ MongoDB connected — database: mascertify`);
