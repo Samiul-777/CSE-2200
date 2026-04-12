@@ -16,6 +16,7 @@ const organizationSchema = new mongoose.Schema({
   rejectionReason: { type: String, trim: true },
   reviewedAt: { type: Date },
   reviewedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  purchasedTemplates: { type: [String], default: ['minimal'] },
   createdAt: { type: Date, default: Date.now }
 });
 
