@@ -56,6 +56,12 @@ export default function Navbar() {
                     <PlusSquare size={15} /> Issue Certificate
                   </Link>
                 )}
+                {(user.role === 'organization' || user.role === 'admin') && (
+                  <Link to="/dashboard/templates"
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${isActive('/dashboard/templates') ? 'text-blue-400 bg-blue-500/10' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}>
+                    Templates
+                  </Link>
+                )}
                 {user.role === 'admin' && (
                   <>
                     <Link to="/admin/organizations"
@@ -69,6 +75,10 @@ export default function Navbar() {
                     <Link to="/admin/audit-logs"
                       className={`px-3 py-2 rounded-lg text-sm font-medium ${isActive('/admin/audit-logs') ? 'text-blue-400 bg-blue-500/10' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}>
                       Audit
+                    </Link>
+                    <Link to="/admin/transactions"
+                      className={`px-3 py-2 rounded-lg text-sm font-medium ${isActive('/admin/transactions') ? 'text-blue-400 bg-blue-500/10' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}>
+                      Transactions
                     </Link>
                   </>
                 )}
@@ -131,6 +141,12 @@ export default function Navbar() {
                     Issue Certificate
                   </Link>
                 )}
+                {(user.role === 'organization' || user.role === 'admin') && (
+                  <Link to="/dashboard/templates" onClick={() => setMenuOpen(false)}
+                    className="block px-4 py-2.5 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-all">
+                    Template Store
+                  </Link>
+                )}
                 {user.role === 'admin' && (
                   <>
                     <Link to="/admin/organizations" onClick={() => setMenuOpen(false)}
@@ -144,6 +160,10 @@ export default function Navbar() {
                     <Link to="/admin/audit-logs" onClick={() => setMenuOpen(false)}
                       className="block px-4 py-2.5 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-all">
                       Admin · Audit
+                    </Link>
+                    <Link to="/admin/transactions" onClick={() => setMenuOpen(false)}
+                      className="block px-4 py-2.5 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-all">
+                      Admin · Transactions
                     </Link>
                   </>
                 )}

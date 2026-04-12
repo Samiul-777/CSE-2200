@@ -21,6 +21,8 @@ import AuditLogPage from './pages/AuditLogPage'
 import OrgPublishedCourses from './pages/OrgPublishedCourses'
 import Discover from './pages/Discover'
 import DiscoverDetail from './pages/DiscoverDetail'
+import TemplateStore from './pages/TemplateStore'
+import AdminTransactions from './pages/AdminTransactions'
 
 const ProtectedRoute = ({ children, orgOnly = false }) => {
   const { user, loading, networkError } = useAuth()
@@ -107,6 +109,11 @@ const AppRoutes = () => {
             <OrgPublishedCourses />
           </ProtectedRoute>
         } />
+        <Route path="/dashboard/templates" element={
+          <ProtectedRoute>
+            <TemplateStore />
+          </ProtectedRoute>
+        } />
         
         <Route path="/admin/organizations" element={
           <AdminRoute>
@@ -121,6 +128,11 @@ const AppRoutes = () => {
         <Route path="/admin/audit-logs" element={
           <AdminRoute>
             <AdminAuditLogs />
+          </AdminRoute>
+        } />
+        <Route path="/admin/transactions" element={
+          <AdminRoute>
+            <AdminTransactions />
           </AdminRoute>
         } />
         <Route path="*" element={<Navigate to="/" replace />} />
