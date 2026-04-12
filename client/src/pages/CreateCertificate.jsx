@@ -22,6 +22,7 @@ export default function CreateCertificate() {
   const [savedCert, setSavedCert] = useState(null)
   const [collections, setCollections] = useState([])
   const [listings, setListings] = useState([])
+  const [ownedTemplates, setOwnedTemplates] = useState(['minimal'])
 
   const [form, setForm] = useState({
     recipientName: '',
@@ -46,6 +47,9 @@ export default function CreateCertificate() {
     if (!user || (user.role !== 'organization' && user.role !== 'admin')) return
     axios.get('/api/collections').then((r) => setCollections(r.data.collections || [])).catch(() => {})
     axios.get('/api/org/published-courses').then((r) => setListings(r.data.courses || [])).catch(() => {})
+    axios.get('/api/payment/templates').then((r) => {
+      if (r.data.success) setOwnedTemplates(r.data.templates.filter(t => t.owned).map(t => t.id))
+    }).catch(() => {})
   }, [user])
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
@@ -210,11 +214,16 @@ export default function CreateCertificate() {
                   <label className="block text-sm font-medium text-gray-300 mb-1.5">Template</label>
                   <select className="input-dark w-full px-4 py-3 rounded-xl text-sm" value={form.templateKey}
                     onChange={e => set('templateKey', e.target.value)}>
-                    <option value="minimal">Modern minimal (blue)</option>
-                    <option value="academic">Academic (gold)</option>
-                    <option value="professional">Professional (navy/gold)</option>
-                    <option value="elegant">Elegant (artistic/serif)</option>
+                    <option value="minimal">Modern Minimal {ownedTemplates.includes('minimal') ? '✓' : '🔒'}</option>
+                    <option value="elegant" disabled={!ownedTemplates.includes('elegant')}>Elegant {ownedTemplates.includes('elegant') ? '✓' : '🔒 (৳499)'}</option>
+                    <option value="professional" disabled={!ownedTemplates.includes('professional')}>Professional {ownedTemplates.includes('professional') ? '✓' : '🔒 (৳799)'}</option>
+                    <option value="academic" disabled={!ownedTemplates.includes('academic')}>Academic {ownedTemplates.includes('academic') ? '✓' : '🔒 (৳999)'}</option>
                   </select>
+                  {!ownedTemplates.includes(form.templateKey) && (
+                    <p className="mt-1.5 text-xs text-yellow-400">
+                      This template is locked. <a href="/dashboard/templates" className="underline">Buy it in the Template Store →</a>
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-1.5">Collection</label>
