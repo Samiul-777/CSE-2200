@@ -4,6 +4,7 @@ import Certificate from '../models/Certificate.js';
 import AuditLog from '../models/AuditLog.js';
 import Organization from '../models/Organization.js';
 import { protect, orgOnly } from '../middleware/auth.js';
+import { TEMPLATE_CATALOG } from '../utils/sslcommerz.js';
 
 const router = express.Router();
 
@@ -103,6 +104,24 @@ router.get('/audit-logs', protect, orgOnly, async (req, res) => {
     ]);
 
     res.json({ success: true, logs, page, limit, total, totalPages: Math.ceil(total / limit) });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// GET /api/organizations/templates (Alias for /api/payment/templates)
+router.get('/templates', protect, async (req, res) => {
+  try {
+    let purchasedTemplates = ['minimal'];
+    if (req.user.role === 'organization' || req.user.role === 'admin') {
+      const org = await Organization.findOne({ userId: req.user._id });
+      if (org) purchasedTemplates = org.purchasedTemplates || ['minimal'];
+    }
+    const templates = TEMPLATE_CATALOG.map((t) => ({
+      ...t,
+      owned: req.user.role === 'admin' || purchasedTemplates.includes(t.id),
+    }));
+    res.json({ success: true, templates });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

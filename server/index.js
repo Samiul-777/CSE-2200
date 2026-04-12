@@ -10,6 +10,7 @@ import organizationRoutes from './routes/organizations.js';
 import discoverRoutes from './routes/discover.js';
 import orgPublishedCourseRoutes from './routes/orgPublishedCourses.js';
 import embedRoutes from './routes/embed.js';
+import paymentRoutes from './routes/payment.js';
 import User from './models/User.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -43,6 +44,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
 app.set('trust proxy', 1);
 
 // Health check
@@ -58,6 +60,7 @@ app.use('/api/organizations', organizationRoutes);
 app.use('/api/discover', discoverRoutes);
 app.use('/api/org/published-courses', orgPublishedCourseRoutes);
 app.use('/api/embed', embedRoutes);
+app.use('/api/payment', paymentRoutes);
 
 // Error handler
 app.use((err, req, res, next) => {
